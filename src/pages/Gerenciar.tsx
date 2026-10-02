@@ -21,6 +21,7 @@ export default function GerenciarPage() {
       <div className="head"><div><span className="eyebrow">Gestão</span><h1>Gerenciar conteúdo</h1>
         <p>Cadastre vídeos, slideshows e PDFs, ligue o questionário com nota mínima e mantenha as principais dúvidas de cada conteúdo.</p></div>
         <Link className="btn" to="/gerenciar/novo"><Icon n="plus" s={16} /> Novo conteúdo</Link></div>
+      <SetoresAdmin />
       <TrilhasAdmin />
       <div className="table-wrap"><table>
         <thead><tr><th>Conteúdo</th><th>Trilha / seção</th><th>Formato</th><th>Questionário</th><th>Dúvidas</th><th>Obrigatório</th><th></th></tr></thead>
@@ -104,6 +105,34 @@ function TrilhasAdmin() {
           <button className="btn sm" type="submit"><Icon n="plus" s={14} /> Trilha</button>
         </form>
       </>}
+    </div>
+  )
+}
+
+function SetoresAdmin() {
+  const { setores, recarregar, toast } = useStore()
+  const [novo, setNovo] = useState('')
+  async function add(e: React.FormEvent) {
+    e.preventDefault(); if (!novo.trim()) return
+    const { error } = await supabase.from('setores').insert({ nome: novo.trim(), ordem: setores.length })
+    if (error) toast(error.message.includes('duplicate') ? 'Esse setor já existe.' : error.message); else { toast('Setor criado.'); setNovo(''); recarregar() }
+  }
+  async function renomear(id: number, nome: string) {
+    if (!nome.trim()) return
+    const { error } = await supabase.from('setores').update({ nome: nome.trim() }).eq('id', id)
+    if (error) toast(error.message); else recarregar()
+  }
+  return (
+    <div className="panel" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div><h2>Setores</h2><span className="muted" style={{ fontSize: 13 }}>Cada pessoa escolhe o seu no perfil. Eles definem quem tem cada treinamento obrigatório.</span></div>
+      <div className="inline-form">
+        {setores.map((s) => <input key={s.id} className="in" style={{ flex: '0 1 220px' }} defaultValue={s.nome} aria-label="Nome do setor"
+          onBlur={(e) => e.target.value !== s.nome && renomear(s.id, e.target.value)} />)}
+      </div>
+      <form className="inline-form" onSubmit={add}>
+        <input className="in" placeholder="Novo setor (ex.: Engenharia de Obras)" value={novo} onChange={(e) => setNovo(e.target.value)} />
+        <button className="btn sm" type="submit"><Icon n="plus" s={14} /> Setor</button>
+      </form>
     </div>
   )
 }

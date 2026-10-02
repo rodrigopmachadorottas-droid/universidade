@@ -152,7 +152,7 @@ function PerfilModal({ primeiro, onClose }: { primeiro: boolean; onClose: () => 
       </div>
       <form className="form-grid" onSubmit={salvar}>
         <div className="field"><label htmlFor="p-nome">Nome</label><input className="in" id="p-nome" value={f.nome} onChange={(e) => setF({ ...f, nome: e.target.value })} /></div>
-        <div className="field"><label htmlFor="p-email">E-mail</label><input className="in" id="p-email" value={profile?.email || ''} disabled /></div>
+        <div className="field"><label htmlFor="p-email">E-mail</label><input className="in" id="p-email" value={profile?.email || ''} disabled title="O e-mail é o do login e não pode ser alterado" /></div>
         <div className="field"><label htmlFor="p-setor">Setor</label>
           <select className="in" id="p-setor" value={f.setor_id} onChange={(e) => setF({ ...f, setor_id: e.target.value })}>
             <option value="">Selecione…</option>{setores.map((s) => <option key={s.id} value={s.id}>{s.nome}</option>)}

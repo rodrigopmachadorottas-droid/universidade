@@ -14,7 +14,8 @@ Siga as etapas na ordem. Leva por volta de 1 hora na primeira vez.
 
 1. Em [supabase.com](https://supabase.com), clique em **New project**. Escolha a região **South America (São Paulo)** e anote a senha do banco.
 2. Abra **SQL Editor → New query** e cole o conteúdo de `supabase/01_schema.sql` inteiro. Clique em **Run**.
-3. Em outra query, cole `supabase/02_seed.sql` e clique em **Run**. Esse arquivo cria os setores, as trilhas, as seções e os conteúdos de exemplo do protótipo.
+3. Em outra query, cole `supabase/02_seed.sql` e clique em **Run**. Esse arquivo cria o setor Excelência Operacional e as trilhas, seções e conteúdos de exemplo do protótipo. Os outros setores você cadastra no app, em **Gerenciar conteúdo → Setores**.
+   - Se você entrou no app **antes** de rodar os arquivos, rode também `supabase/03_correcao_perfil.sql`. Ele cria o perfil que ficou faltando e deixa o Rodrigo como admin.
 4. Em **Authentication → Sign In / Providers → Email**:
    - deixe **Email** ligado;
    - em **Email OTP Length**, use **6**.

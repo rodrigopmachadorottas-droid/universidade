@@ -66,6 +66,27 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users
   for each row execute function public.handle_new_user();
 
+-- função que o app chama para criar o perfil caso ele não exista
+create or replace function public.garantir_perfil() returns void
+language plpgsql security definer set search_path = public as $$
+declare
+  v_email  text := lower((select email from auth.users where id = auth.uid()));
+  v_dominio text := (select valor from public.config where chave = 'dominio_permitido');
+  v_admins text := coalesce((select valor from public.config where chave = 'admins_iniciais'), '');
+begin
+  if auth.uid() is null or v_email is null then return; end if;
+  if v_dominio is not null and v_email not like '%@' || v_dominio then
+    raise exception 'Use seu e-mail @%', v_dominio;
+  end if;
+  insert into public.profiles (id, email, nome, is_admin)
+  values (auth.uid(), v_email, initcap(replace(split_part(v_email, '@', 1), '.', ' ')),
+          v_email = any (string_to_array(replace(lower(v_admins), ' ', ''), ',')))
+  on conflict (id) do nothing;
+end $$;
+revoke execute on function public.garantir_perfil() from public, anon;
+grant execute on function public.garantir_perfil() to authenticated;
+
+
 -- ninguém (exceto admin) muda o próprio is_admin ou e-mail
 create or replace function public.protege_profile() returns trigger
 language plpgsql security definer set search_path = public as $$

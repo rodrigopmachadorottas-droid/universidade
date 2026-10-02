@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import Layout from './Layout'
 import { useStore } from './lib/store'
 import Login from './pages/Login'
+import { supabase } from './lib/supabase'
 import Home from './pages/Home'
 import { BuscaPage, SecaoPage, TrilhaPage, TrilhasPage } from './pages/Trilhas'
 import ConteudoPage from './pages/Conteudo'
@@ -13,10 +14,21 @@ import GerenciarPage from './pages/Gerenciar'
 import EditorPage from './pages/Editor'
 
 export default function App() {
-  const { session, carregado } = useStore()
+  const { session, carregado, profile, erroPerfil, setores } = useStore()
   if (session === undefined) return <div className="loading">Carregando…</div>
   if (!session) return <Login />
   if (!carregado) return <div className="loading">Carregando a Universidade…</div>
+  if (!profile || !setores.length) return (
+    <div className="login"><div className="login-card">
+      <h2>Falta preparar o banco</h2>
+      <p className="muted" style={{ margin: 0 }}>{!profile
+        ? <>Não encontrei o seu perfil ({session.user.email}). {erroPerfil}</>
+        : <>Não há nenhum setor cadastrado.</>}</p>
+      <p style={{ margin: 0 }}>No Supabase, abra o <b>SQL Editor</b> e rode o arquivo <code>supabase/03_correcao_perfil.sql</code>. Depois recarregue esta página.</p>
+      <div className="toolbar"><button className="btn" onClick={() => location.reload()}>Recarregar</button>
+        <button className="btn ghost" onClick={() => supabase.auth.signOut()}>Sair</button></div>
+    </div></div>
+  )
   return (
     <Routes>
       <Route element={<Layout />}>

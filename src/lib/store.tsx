@@ -10,6 +10,7 @@ type Store = {
   prog: Record<string, Progresso>
   pendDuvidas: number
   carregado: boolean
+  erroPerfil: string | null
   modo: 'admin' | 'colab'; setModo: (m: 'admin' | 'colab') => void
   isAdmin: boolean
   toast: (m: string) => void
@@ -40,6 +41,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     try { return (localStorage.getItem('ur-modo') as any) || 'admin' } catch { return 'admin' }
   })
   const [msg, setMsg] = useState<string | null>(null)
+  const [erroPerfil, setErroPerfil] = useState<string | null>(null)
 
   const setModo = (m: 'admin' | 'colab') => { setModoState(m); try { localStorage.setItem('ur-modo', m) } catch {} }
   const toast = useCallback((m: string) => { setMsg(m); window.clearTimeout((toast as any).t); (toast as any).t = window.setTimeout(() => setMsg(null), 2800) }, [])
@@ -53,7 +55,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const uid = session?.user?.id
   const recarregarPerfil = useCallback(async () => {
     if (!uid) return
-    const { data } = await supabase.from('profiles').select('*').eq('id', uid).single()
+    let { data } = await supabase.from('profiles').select('*').eq('id', uid).maybeSingle()
+    if (!data) {
+      // perfil não criado (ex.: primeiro login antes do banco estar pronto): cria agora
+      const r = await supabase.rpc('garantir_perfil')
+      if (r.error) setErroPerfil(r.error.message)
+      data = (await supabase.from('profiles').select('*').eq('id', uid).maybeSingle()).data
+    }
+    if (data) setErroPerfil(null)
+    else setErroPerfil((e) => e || 'Seu perfil não foi encontrado no banco.')
     setProfile(data as Profile)
   }, [uid])
   const recarregar = useCallback(async () => {
@@ -89,11 +99,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const obrigatorioMeu = (c: Conteudo) => obrigatorioPara(c, profile)
     const isPend = (c: Conteudo) => status(c, prog[c.id]) !== 'concluido' && (c.quiz_ativo || obrigatorioMeu(c))
     return {
-      session, profile, setores, trilhas, secoes, conteudos, prog, pendDuvidas, carregado,
+      session, profile, erroPerfil, setores, trilhas, secoes, conteudos, prog, pendDuvidas, carregado,
       modo, setModo, isAdmin: Boolean(profile?.is_admin && modo === 'admin'), toast,
       recarregar, recarregarProg, recarregarPerfil, recarregarPend, secao, trilhaDe, isPend, obrigatorioMeu,
     }
-  }, [session, profile, setores, trilhas, secoes, conteudos, prog, pendDuvidas, carregado, modo])
+  }, [session, profile, erroPerfil, setores, trilhas, secoes, conteudos, prog, pendDuvidas, carregado, modo])
 
   return (
     <Ctx.Provider value={value}>

@@ -1,15 +1,9 @@
 -- Universidade Rottas — dados de exemplo (rodar depois do 01_schema.sql)
 -- Os vídeos ainda não têm link do SharePoint: edite cada conteúdo no app e cole o código de incorporação.
 
-insert into public.setores (nome, ordem) values
-  ('Engenharia de Obras', 0),
-  ('Planejamento', 1),
-  ('Orçamentos', 2),
-  ('Suprimentos', 3),
-  ('Qualidade', 4),
-  ('Financeiro', 5),
-  ('Excelência Operacional', 6)
+insert into public.setores (nome, ordem) values ('Excelência Operacional', 0)
 on conflict (nome) do nothing;
+-- outros setores: cadastre em Gerenciar conteúdo > Setores
 
 insert into public.trilhas (slug, nome, descricao, cor, cor2, ordem) values ('eng', 'Engenharia', 'Processos, sistemas e rotinas da engenharia de obras: ERP, BPMs, Mereo e atualização orçamentária.', '#E07A0B', '#FF9E2C', 0) on conflict (slug) do nothing;
 insert into public.secoes (trilha_id, slug, nome, descricao, ordem) select id, 'eng-erp', 'ERP', 'Medições, contratos, aditivos e consultas no ERP.', 0 from public.trilhas where slug='eng' on conflict (slug) do nothing;
