@@ -211,6 +211,18 @@ create table if not exists public.tentativas (
 );
 create index if not exists tentativas_user_idx on public.tentativas (user_id, conteudo_id);
 
+-- permissões de acesso pela API (o RLS abaixo decide o que cada um vê)
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
+grant execute on all functions in schema public to authenticated;
+
+-- tabelas criadas no futuro já nascem com a permissão
+alter default privileges in schema public grant select, insert, update, delete on tables to authenticated;
+alter default privileges in schema public grant usage, select on sequences to authenticated;
+alter default privileges in schema public grant execute on functions to authenticated;
+
+
 -- =====================================================================
 -- Segurança (Row Level Security)
 -- =====================================================================
@@ -449,3 +461,17 @@ drop policy if exists "avatar proprio" on storage.objects;
 create policy "avatar proprio" on storage.objects for all to authenticated
   using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text)
   with check (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- =====================================================================
+-- Aparência: logo editável
+-- =====================================================================
+-- vazio = usa a logo padrão do site (public/logo.png)
+insert into public.config (chave, valor) values ('logo_url', '')
+on conflict (chave) do nothing;
+
+-- a logo aparece até na tela de login, então pode ser lida sem estar logado
+drop policy if exists config_ler_publico on public.config;
+create policy config_ler_publico on public.config for select to anon, authenticated
+  using (chave in ('logo_url'));
+grant select on public.config to anon, authenticated;
+grant insert, update on public.config to authenticated;   -- só admin consegue de fato (regra config_admin)

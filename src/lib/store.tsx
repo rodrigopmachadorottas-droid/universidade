@@ -11,6 +11,8 @@ type Store = {
   pendDuvidas: number
   carregado: boolean
   erroPerfil: string | null
+  logo: string
+  setLogo: (url: string) => void
   modo: 'admin' | 'colab'; setModo: (m: 'admin' | 'colab') => void
   isAdmin: boolean
   toast: (m: string) => void
@@ -42,6 +44,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   })
   const [msg, setMsg] = useState<string | null>(null)
   const [erroPerfil, setErroPerfil] = useState<string | null>(null)
+  const [logo, setLogoState] = useState('/logo.png')
+  const setLogo = useCallback((url: string) => {
+    const u = url || '/logo.png'
+    setLogoState(u)
+    document.querySelectorAll<HTMLLinkElement>('link[rel~="icon"], link[rel="apple-touch-icon"]').forEach((l) => (l.href = u))
+  }, [])
+  // logo configurada pelo admin (também troca o ícone da aba); funciona antes do login
+  useEffect(() => {
+    supabase.from('config').select('valor').eq('chave', 'logo_url').maybeSingle().then(({ data }) => { if (data?.valor) setLogo(data.valor) })
+  }, [])
 
   const setModo = (m: 'admin' | 'colab') => { setModoState(m); try { localStorage.setItem('ur-modo', m) } catch {} }
   const toast = useCallback((m: string) => { setMsg(m); window.clearTimeout((toast as any).t); (toast as any).t = window.setTimeout(() => setMsg(null), 2800) }, [])
@@ -55,7 +67,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const uid = session?.user?.id
   const recarregarPerfil = useCallback(async () => {
     if (!uid) return
-    let { data } = await supabase.from('profiles').select('*').eq('id', uid).maybeSingle()
+    let { data, error: e1 } = await supabase.from('profiles').select('*').eq('id', uid).maybeSingle()
+    if (e1) { setErroPerfil(`Erro ao ler o perfil: ${e1.message}`); setProfile(null); return }
     if (!data) {
       // perfil não criado (ex.: primeiro login antes do banco estar pronto): cria agora
       const r = await supabase.rpc('garantir_perfil')
@@ -99,11 +112,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const obrigatorioMeu = (c: Conteudo) => obrigatorioPara(c, profile)
     const isPend = (c: Conteudo) => status(c, prog[c.id]) !== 'concluido' && (c.quiz_ativo || obrigatorioMeu(c))
     return {
-      session, profile, erroPerfil, setores, trilhas, secoes, conteudos, prog, pendDuvidas, carregado,
+      session, profile, erroPerfil, logo, setLogo, setores, trilhas, secoes, conteudos, prog, pendDuvidas, carregado,
       modo, setModo, isAdmin: Boolean(profile?.is_admin && modo === 'admin'), toast,
       recarregar, recarregarProg, recarregarPerfil, recarregarPend, secao, trilhaDe, isPend, obrigatorioMeu,
     }
-  }, [session, profile, erroPerfil, setores, trilhas, secoes, conteudos, prog, pendDuvidas, carregado, modo])
+  }, [session, profile, erroPerfil, logo, setores, trilhas, secoes, conteudos, prog, pendDuvidas, carregado, modo])
 
   return (
     <Ctx.Provider value={value}>

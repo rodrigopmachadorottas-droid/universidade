@@ -29,6 +29,8 @@ export const IC: Record<string, string> = {
   star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>',
   logout: '<path d="M15 4h4v16h-4M10 17l5-5-5-5M15 12H3"/>',
+  enter: '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>',
+  left: '<path d="M19 12H5M12 19l-7-7 7-7"/>',
 }
 
 export function Icon({ n, s = 18 }: { n: string; s?: number }) {

@@ -153,3 +153,36 @@ src/styles.css           visual (cores do Portal Rottas)
 ```
 
 **Ainda não implementado:** envio das notificações (as preferências já ficam salvas no perfil) e o resumo semanal por e-mail. Os dois podem vir depois, com uma Edge Function do Supabase.
+
+---
+
+## 9. Logo editável (rodar 1x)
+
+Rode `supabase/05_aparencia.sql` no SQL Editor. Depois disso, em **Gerenciar conteúdo → Logo da Universidade** você troca a imagem. Ela muda na barra lateral, na tela de login e no ícone da aba do navegador, para todo mundo.
+
+---
+
+## 10. Login com Microsoft (quando o TI liberar)
+
+A tela de login já tem as duas versões, e um seletor **Versão** no canto mostra uma ou outra. Para ligar o login Microsoft:
+
+**TI (Microsoft Entra ID / Azure)**, uns 15 minutos:
+1. *Entra ID → Registros de aplicativo → Novo registro*. Nome: "Universidade Rottas". Tipo de conta: **somente este diretório (Rottas)**.
+2. URI de redirecionamento (Web): `https://SEU-PROJETO.supabase.co/auth/v1/callback`
+3. Em *Certificados e segredos*, crie um **segredo do cliente** e anote o **valor**. Ele vence: anote a data e renove antes de vencer, senão o login para de funcionar.
+4. Anote o **ID do aplicativo (cliente)** e o **ID do diretório (locatário)**.
+
+**Supabase** → *Authentication → Sign In / Providers → Azure*:
+- **Client ID**: o ID do aplicativo
+- **Secret**: o valor do segredo
+- **Azure Tenant URL**: `https://login.microsoftonline.com/ID-DO-DIRETORIO`
+- Ative e salve.
+
+**Vercel** → *Settings → Environment Variables*:
+- `VITE_LOGIN_MODO` = `microsoft` → a tela mostra só o botão Microsoft e o seletor some.
+- Use `email` para ficar só com o código por e-mail. Sem a variável, o seletor de pré-visualização aparece.
+- Depois de mudar a variável, faça *Redeploy*.
+
+O banco continua recusando quem não é `@rottasconstrutora.com.br`. O Supabase normalmente liga a conta Microsoft à conta que já existe com o mesmo e-mail, mantendo perfil e progresso. Teste primeiro com a sua conta: se aparecer um perfil novo e vazio, me avise que ajustamos.
+
+**Custo:** o login de funcionários com o Entra ID já está incluso no Microsoft 365. No Supabase, o plano gratuito comporta até 50 mil usuários ativos por mês.

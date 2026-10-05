@@ -21,6 +21,7 @@ export default function GerenciarPage() {
       <div className="head"><div><span className="eyebrow">Gestão</span><h1>Gerenciar conteúdo</h1>
         <p>Cadastre vídeos, slideshows e PDFs, ligue o questionário com nota mínima e mantenha as principais dúvidas de cada conteúdo.</p></div>
         <Link className="btn" to="/gerenciar/novo"><Icon n="plus" s={16} /> Novo conteúdo</Link></div>
+      <AparenciaAdmin />
       <SetoresAdmin />
       <TrilhasAdmin />
       <div className="table-wrap"><table>
@@ -133,6 +134,39 @@ function SetoresAdmin() {
         <input className="in" placeholder="Novo setor (ex.: Engenharia de Obras)" value={novo} onChange={(e) => setNovo(e.target.value)} />
         <button className="btn sm" type="submit"><Icon n="plus" s={14} /> Setor</button>
       </form>
+    </div>
+  )
+}
+
+function AparenciaAdmin() {
+  const { logo, setLogo, toast } = useStore()
+  const [enviando, setEnviando] = useState(false)
+  async function salvarUrl(url: string) {
+    const { error } = await supabase.from('config').upsert({ chave: 'logo_url', valor: url })
+    if (error) { toast('Não foi possível salvar: ' + error.message); return false }
+    setLogo(url); return true
+  }
+  async function enviar(f: File) {
+    if (!f.type.startsWith('image/')) return toast('Envie uma imagem (PNG, JPG ou SVG).')
+    if (f.size > 2 * 1024 * 1024) return toast('Use uma imagem de até 2 MB.')
+    setEnviando(true)
+    const path = `marca/logo-${Date.now()}.${(f.name.split('.').pop() || 'png').toLowerCase()}`
+    const up = await supabase.storage.from('thumbs').upload(path, f, { contentType: f.type })
+    if (up.error) { setEnviando(false); return toast('Falha no envio: ' + up.error.message) }
+    const url = supabase.storage.from('thumbs').getPublicUrl(path).data.publicUrl
+    if (await salvarUrl(url)) toast('Logo atualizada para todo mundo.')
+    setEnviando(false)
+  }
+  return (
+    <div className="panel" style={{ display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap' }}>
+      <img src={logo} alt="Logo atual" style={{ width: 72, height: 72, borderRadius: 14, objectFit: 'cover', flex: 'none', border: '1px solid var(--line)' }} />
+      <div style={{ flex: '1 1 260px', minWidth: 0 }}><h2>Logo da Universidade</h2>
+        <span className="muted" style={{ fontSize: 13 }}>Aparece na barra lateral, na tela de login e no ícone da aba do navegador. Use uma imagem quadrada, de pelo menos 256×256 px.</span></div>
+      <div className="toolbar">
+        <label className="btn" style={{ cursor: 'pointer' }}>{enviando ? 'Enviando…' : 'Trocar logo'}
+          <input type="file" accept="image/*" hidden disabled={enviando} onChange={(e) => { const f = e.target.files?.[0]; if (f) enviar(f); e.target.value = '' }} /></label>
+        {logo !== '/logo.png' && <button className="btn ghost" onClick={async () => { if (await salvarUrl('')) toast('Voltou para a logo padrão.') }}>Usar a padrão</button>}
+      </div>
     </div>
   )
 }

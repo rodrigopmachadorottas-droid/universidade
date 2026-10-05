@@ -24,7 +24,7 @@ export default function App() {
       <p className="muted" style={{ margin: 0 }}>{!profile
         ? <>Não encontrei o seu perfil ({session.user.email}). {erroPerfil}</>
         : <>Não há nenhum setor cadastrado.</>}</p>
-      <p style={{ margin: 0 }}>No Supabase, abra o <b>SQL Editor</b> e rode o arquivo <code>supabase/03_correcao_perfil.sql</code>. Depois recarregue esta página.</p>
+      <p style={{ margin: 0 }}>No Supabase, abra o <b>SQL Editor</b> e rode o arquivo <code>{erroPerfil && /permission denied|42501/i.test(erroPerfil) ? 'supabase/04_permissoes.sql' : 'supabase/03_correcao_perfil.sql'}</code>. Depois recarregue esta página.</p>
       <div className="toolbar"><button className="btn" onClick={() => location.reload()}>Recarregar</button>
         <button className="btn ghost" onClick={() => supabase.auth.signOut()}>Sair</button></div>
     </div></div>

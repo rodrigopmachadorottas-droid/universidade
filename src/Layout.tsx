@@ -6,7 +6,7 @@ import { Avatar, Icon, Modal } from './ui'
 
 export default function Layout() {
   const st = useStore()
-  const { profile, isAdmin, conteudos, isPend, pendDuvidas, setores } = st
+  const { profile, isAdmin, conteudos, isPend, pendDuvidas, setores, logo } = st
   const [menu, setMenu] = useState(false)
   const [perfil, setPerfil] = useState(false)
   const [q, setQ] = useState('')
@@ -33,7 +33,7 @@ export default function Layout() {
     <div className="app">
       <aside className="side">
         <div className="brand">
-          <img className="brand-mark" src="/logo.png" alt="Universidade Rottas" />
+          <img className="brand-mark" src={logo} alt="Universidade Rottas" />
           <div><b>Universidade Rottas</b><span>Rottas Construtora</span></div>
         </div>
         <nav className="nav">
