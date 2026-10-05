@@ -363,7 +363,7 @@ a.btn{text-decoration:none}
 .lg-hero{background:var(--hero);color:#fff;padding:44px clamp(24px,5vw,64px);display:flex;flex-direction:column;gap:28px;position:relative;overflow:hidden}
 .lg-brand{font:900 24px/1 var(--f-display);letter-spacing:-.01em}
 .lg-brand img{width:64px;height:64px;border-radius:16px;object-fit:cover;box-shadow:0 4px 14px rgba(0,0,0,.15)}
-.lg-pitch{display:flex;flex-direction:column;gap:12px;max-width:620px}
+.lg-pitch{display:flex;flex-direction:column;gap:12px;max-width:620px;margin-top:45px}
 .lg-eyebrow{font:700 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.88)}
 .lg-pitch h1{font:900 clamp(32px,3.6vw,50px)/1.08 var(--f-display);color:#fff;letter-spacing:-.015em}
 .lg-pitch p{margin:0;font-size:17px;line-height:1.5;color:#fff;max-width:46ch}
@@ -420,6 +420,7 @@ a.btn{text-decoration:none}
   .lg-preview{position:static;align-self:flex-end}
   .lg-hero{padding:24px 16px;gap:16px}
   .lg-show{display:none}
+  .lg-pitch{margin-top:0}
   .lg-pitch h1{font-size:28px}
   .lg-side{padding:20px 16px 32px;align-items:stretch}
 }
