@@ -368,7 +368,7 @@ a.btn{text-decoration:none}
 .lg-pitch h1{font:900 clamp(32px,3.6vw,50px)/1.08 var(--f-display);color:#fff;letter-spacing:-.015em}
 .lg-pitch p{margin:0;font-size:17px;line-height:1.5;color:#fff;max-width:46ch}
 .lg-show{position:relative;margin-top:8px;padding-bottom:110px;max-width:760px}
-.lg-win{background:#fff;color:#323130;border-radius:16px;box-shadow:0 20px 50px rgba(80,40,0,.25);overflow:hidden;margin-left:clamp(0px,3vw,36px)}
+.lg-win{background:#fff;color:#323130;border-radius:16px;box-shadow:0 20px 50px rgba(80,40,0,.25);overflow:hidden;margin-left:0;margin-right:clamp(0px,3vw,36px)}
 .lg-win-top{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #EBEAEA;font-size:14px}
 .lg-win-path{display:inline-flex;gap:6px;align-items:center;color:#706F6E}
 .lg-win-path b{color:#E07A0B}

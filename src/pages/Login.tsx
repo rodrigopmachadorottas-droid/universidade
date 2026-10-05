@@ -25,7 +25,6 @@ export default function Login() {
         <div className="lg-pitch">
           <span className="lg-eyebrow">O que você vai encontrar</span>
           <h1>Os treinamentos da Rottas, num só lugar.</h1>
-          <p>Assista quando puder, tire suas dúvidas e acompanhe o que já concluiu.</p>
         </div>
         <Vitrine />
       </section>
@@ -137,7 +136,7 @@ function Vitrine() {
   return (
     <div className="lg-show" aria-hidden="true">
       <div className="lg-win">
-        <div className="lg-win-top"><span className="lg-win-path"><Icon n="trail" s={14} /> <b>Engenharia</b> · ERP</span><span className="lg-win-tag">trilha</span></div>
+        <div className="lg-win-top"><span className="lg-win-path"><Icon n="trail" s={14} /> <b>Trilha Engenharia</b> · ERP</span><span className="lg-win-tag">trilha</span></div>
         <div className="lg-win-body">
           {itens.map((x) => (
             <div className="lg-row" key={x.t}>
